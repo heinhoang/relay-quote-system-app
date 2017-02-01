@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.14.1",
+    "express-graphql": "^0.6.2",
     "graphql": "^0.9.1",
     "mongodb": "^2.2.22"
   }
