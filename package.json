@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "graphql": "^0.9.1"
+    "graphql": "^0.9.1",
+    "mongodb": "^2.2.22"
   }
 }
