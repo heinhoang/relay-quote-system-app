@@ -1,4 +1,5 @@
 import React from 'react';
+import Relay from 'react-relay';
 import 'whatwg-fetch';
 
 import Quote from './quote';
@@ -29,5 +30,10 @@ class QuotesLibrary extends React.Component {
         );
     }
 }
+
+// make react component work with Relay
+QuotesLibrary = Relay.createContainer(QuotesLibrary, {
+    fragments: {}
+});
 
 export default QuotesLibrary;
