@@ -8,6 +8,16 @@ import QuotesLibrary from './quotes-library';
 // define the entry points into the Relay application
 class AppRoute extends Relay.Route {
     static routeName = 'App';
+    // this function to trigger GraphQl query 
+    static queries = {
+        library: (Component) => Relay.QL `
+            query QuotesLibrary {
+                quotesLibrary {
+                    ${Component.getFragment('library')}
+                }
+            }
+        `
+    }
 }
 
 const render = (Component) => {
@@ -15,7 +25,7 @@ const render = (Component) => {
     <AppContainer>
       <Relay.RootContainer 
         Component={Component} 
-        route={new AppRoute}
+        route={new AppRoute()}
       />
     </AppContainer>,
     document.getElementById('react')

@@ -1,8 +1,10 @@
 {
+  "passPerPreset": true, // tell Babel to execute the presets one after the other; 
   "presets": [
+    {"plugins": ["./babelRelayPlugin.js"]},
+    "react",
     ["es2015", {"modules": false}],
-    "stage-0",
-    "react"
+    "stage-0"
   ],
   "plugins": [
     "react-hot-loader/babel"

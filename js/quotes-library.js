@@ -5,25 +5,11 @@ import 'whatwg-fetch';
 import Quote from './quote';
 
 class QuotesLibrary extends React.Component {
-    state = { allQuotes: [] };
-
-    componentDidMount() {
-        fetch(`/graphql?query={
-            allQuotes {
-                id,
-                text,
-                author
-            }
-        }`)
-            .then(res => res.json())
-            .then(json => this.setState(json.data))
-            .catch(err => console.error(err));
-    }
 
     render() {
         return (
             <div className="quotes-list">
-                {this.state.allQuotes.map(quote =>
+                {this.props.library.allQuotes.map(quote => 
                     <Quote key={quote.id} quote={quote} />
                 )}
             </div>
@@ -33,7 +19,18 @@ class QuotesLibrary extends React.Component {
 
 // make react component work with Relay
 QuotesLibrary = Relay.createContainer(QuotesLibrary, {
-    fragments: {}
+    fragments: {
+        // function below fetch result based on GraphgQL fragment and assign to `library`
+        // Relay will make `library` available in `this.props` of `QuotesLibrary`
+        library: () => Relay.QL `
+            fragment AllQuotes on QuotesLibrary {
+                allQuotes {
+                    id
+                    ${Quote.getFragment('quote')}
+                }
+            }
+        `
+    }
 });
 
 export default QuotesLibrary;
