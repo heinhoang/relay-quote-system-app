@@ -1,10 +1,26 @@
 const express = require('express');
+const webpack = require('webpack');
+const webpackDevMiddleware = require('webpack-dev-middleware');
 const {graphql} = require('graphql');
 const graphqlHTTP = require('express-graphql');
 const {MongoClient} = require('mongodb');
 const assert = require('assert');
+const webpackConfig = require("./webpack.config");
 
 const app = express();
+const compiler = webpack(webpackConfig);
+
+app.use(express.static('public'));
+// make sure you can work with webpack HRM
+app.use(webpackDevMiddleware(compiler, {
+    publicPath: webpackConfig.output.publicPath
+}));
+// use webpack-hot-middleware instead of webpack-dev-server to reload server
+app.use(require("webpack-hot-middleware")(compiler, {
+    log: console.log,
+    path: '/__webpack_hmr',
+    heartbeat: 10 * 1000
+}));
 
 const mySchema = require('./schema/main.js');
 
