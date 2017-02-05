@@ -9,8 +9,8 @@ class QuotesLibrary extends React.Component {
     render() {
         return (
             <div className="quotes-list">
-                {this.props.library.allQuotes.map(quote => 
-                    <Quote key={quote.id} quote={quote} />
+                {this.props.library.quotesConnection.edges.map(edge => 
+                    <Quote key={edge.node.id} quote={edge.node} />
                 )}
             </div>
         );
@@ -23,10 +23,14 @@ QuotesLibrary = Relay.createContainer(QuotesLibrary, {
         // function below fetch result based on GraphgQL fragment and assign to `library`
         // Relay will make `library` available in `this.props` of `QuotesLibrary`
         library: () => Relay.QL `
-            fragment AllQuotes on QuotesLibrary {
-                allQuotes {
-                    id
-                    ${Quote.getFragment('quote')}
+            fragment on QuotesLibrary {
+                quotesConnection(first: 100) {
+                    edges {
+                        node {
+                            id
+                            ${Quote.getFragment('quote')}
+                        }
+                    }
                 }
             }
         `

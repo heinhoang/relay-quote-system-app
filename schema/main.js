@@ -6,6 +6,14 @@ const {
     GraphQLList
 } = require('graphql');
 
+// helper functions to define pagination
+const {
+    connectionDefinitions,
+    connectionArgs,
+    connectionFromArray,
+    connectionFromPromisedArray
+} = require('graphql-relay');
+
 // this type for querying single quote
 const QuoteType = new GraphQLObjectType({
     name: 'Quote',
@@ -23,15 +31,28 @@ const QuoteType = new GraphQLObjectType({
     }
 });
 
+// define a pagination type named `QuotesConnectionType` which is a collection of {Quote, QuoteType}
+const {connectionType: QuotesConnectionType} = 
+connectionDefinitions({
+    name: 'Quote',
+    nodeType: QuoteType
+});
+
 // this type for querying library of quotes
 const QuotesLibraryType = new GraphQLObjectType({
     name: 'QuotesLibrary',
     fields: {
-        allQuotes: {
-            type: new GraphQLList(QuoteType),
-            discription: 'A list of the quotes in the database',
-            resolve: (_, args, {db}) => 
-            db.collection('graphql_quotes').find().toArray()
+        // define a pagination `QuotesConnection` has type of `QuotesConnectionType` and
+        // arguments `args` which we will pass later such as `quotesConnection(first: 100)`
+        quotesConnection: {
+            type: QuotesConnectionType,
+            discription: 'A pagination of the quotes in the database',
+            args: connectionArgs,
+            // change from promise array to connection to work with relay
+            resolve: (_, args, {db}) => connectionFromPromisedArray(
+                db.collection('graphql_quotes').find().toArray(),
+                args
+            )
         }
     }
 });
