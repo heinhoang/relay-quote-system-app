@@ -38,6 +38,10 @@ connectionDefinitions({
     nodeType: QuoteType
 });
 
+// add searchTerm to connectionArgs for implementing search feature
+let connectionArgsWithSearch = connectionArgs;
+connectionArgsWithSearch.searchTerm = {type: GraphQLString};
+
 // this type for querying library of quotes
 const QuotesLibraryType = new GraphQLObjectType({
     name: 'QuotesLibrary',
@@ -47,12 +51,18 @@ const QuotesLibraryType = new GraphQLObjectType({
         quotesConnection: {
             type: QuotesConnectionType,
             discription: 'A pagination of the quotes in the database',
-            args: connectionArgs,
+            args: connectionArgsWithSearch,
             // change from promise array to connection to work with relay
-            resolve: (_, args, {db}) => connectionFromPromisedArray(
-                db.collection('graphql_quotes').find().toArray(),
-                args
-            )
+            resolve: (_, args, {db}) => {
+                let findParams = {};
+                if(args.searchTerm) {
+                    findParams.text = new RegExp(args.searchTerm, 'i');
+                }
+                return connectionFromPromisedArray(
+                    db.collection('graphql_quotes').find(findParams).toArray(),
+                    args
+                )
+            }
         }
     }
 });
