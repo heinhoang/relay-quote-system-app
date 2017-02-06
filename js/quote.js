@@ -1,7 +1,22 @@
 import React from 'react';
 import Relay from 'react-relay';
 
+import ThumbsUpMutation from './thumbs-up-mutation'; 
+
 class Quote extends React.Component {
+
+    showLikes = (e) => {
+        e.stopPropagation();
+        let showOrNot = this.props.relay.variables.showLikes;
+        this.props.relay.setVariables({showLikes: !showOrNot});
+    }
+
+    thumbsUpClick = (e) => {
+        e.stopPropagation();        
+        Relay.Store.commitUpdate(new ThumbsUpMutation({
+            quote: this.props.quote
+        }));
+    }
 
     displayLikes() {
         if(!this.props.relay.variables.showLikes) {
@@ -11,13 +26,10 @@ class Quote extends React.Component {
         return(
             <div>
                 {this.props.quote.likesCount} &nbsp;
-                <span className="glyphicon glyphicon-thumbs-up"></span>
+                <span className="glyphicon glyphicon-thumbs-up" 
+                onClick={this.thumbsUpClick}></span>
             </div>
         );
-    }
-
-    showLikes = () => {
-        this.props.relay.setVariables({showLikes: true});
     }
 
     render() {
@@ -37,11 +49,12 @@ class Quote extends React.Component {
 
 Quote = Relay.createContainer(Quote, {
     initialVariables: {
-        showLikes: false
+        showLikes: true
     },
     fragments: {
         quote: () => Relay.QL `
             fragment oneQuote on Quote {
+                ${ThumbsUpMutation.getFragment('quote')}
                 text
                 author
                 likesCount @include(if: $showLikes)

@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node index.js",
+    "generate-schema": "node generateSchemaCache.js",
+    "start": "node generateSchemaCache.js && node server.js",
+    "build": "webpack -p --config webpack.config.prod.js",
+    "startProp": "node generateSchemaCache.js && webpack -p --config webpack.config.prod.js && cross-env NODE_ENV=production node server.js",
     "dev-webpack": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js",
-    "build": "webpack --config webpack.config.js -p",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -30,6 +32,7 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-0": "^6.22.0",
+    "cross-env": "^3.1.4",
     "react-hot-loader": "^3.0.0-beta.6",
     "webpack": "^2.2.1",
     "webpack-dev-middleware": "^1.10.0",

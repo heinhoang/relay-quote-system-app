@@ -9,6 +9,7 @@ const {
 } = require('graphql');
 
 const {
+    mutationWithClientMutationId,
     // helpers to implement the Node Interface on our server
     globalIdField,
     fromGlobalId,
@@ -58,7 +59,7 @@ const QuoteType = new GraphQLObjectType({
             },
             likesCount: {
                 type: GraphQLInt,
-                resolve: () => Math.floor(10 * Math.random())
+                resolve: obj => obj.likesCount || 0
             }
         }
     )
@@ -123,8 +124,40 @@ const queryType = new GraphQLObjectType({
     )
 });
 
+const thumbsUpMutation = mutationWithClientMutationId({
+    name: 'ThumbsUpMutation',
+    inputFields: {
+        quoteId: {type: GraphQLString}
+    },
+    outputFields: {
+        // reload the current quote object
+        quote: {
+            type: QuoteType,
+            resolve: obj => obj
+        }
+    },
+    mutateAndGetPayload: (params, {db}) => {
+        const {id} = fromGlobalId(params.quoteId);
+        return Promise.resolve(
+            db.collection('graphql_quotes').updateOne(
+                {_id: ObjectID(id)},
+                // `$inc` is an increment operation, increase likesCount to 1
+                {$inc: {likesCount: 1}}
+            )
+        )
+    }
+});
+// define a mutation
+const mutationType = new GraphQLObjectType({
+    name: 'RootMutation',
+    fields: () => ({
+        thumbsUp: thumbsUpMutation
+    })
+});
+
 const mySchema = new GraphQLSchema({
-    query: queryType
+    query: queryType,
+    mutation: mutationType
 });
 
 module.exports = mySchema;
