@@ -23,15 +23,15 @@ module.exports = {
 
   devtool: 'inline-source-map',
 
-  devServer: {
-    // enable server reload
-    hot: true,
-    // enable browser reload
-    inline: true,
-    port: 3000,
-    contentBase: resolve(__dirname, 'public'),
-    publicPath: '/'
-  },
+  // devServer: {
+  //   // enable server reload
+  //   hot: true,
+  //   // enable browser reload
+  //   inline: true,
+  //   port: 3000,
+  //   contentBase: resolve(__dirname, 'public'),
+  //   publicPath: '/'
+  // },
 
   module: {
     rules: [

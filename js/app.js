@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'; 
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
 import { AppContainer } from 'react-hot-loader';
